@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
 
+use App\Models\User;
+
 class FortifyServiceProvider extends ServiceProvider
 {
     /**
@@ -46,20 +48,41 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
 
-
-        Fortify::loginView(function(){
-            return view('auth.login');
-        });
-
-        Fortify::authenticateUsing(function(Request $request){
-            $user = User::where('email',$request->email)->first();
-            if($user && Hash::check($request->password,$user->password)){
-                return $user;
-            }
-        });
-         Fortify::registerView(function(){
+        Fortify::registerView(function () {
             return view('auth.register');
         });
+        Fortify::loginView(fn () => view('auth.login'));
+
+        Fortify::requestPasswordResetLinkView(function () {
+            return view('auth.forgot-password');
+        });
+
+        Fortify::resetPasswordView(function ($request) {
+            return view('auth.reset-password', ['request' => $request]);
+        });
+
+        Fortify::verifyEmailView(function () {
+            return view('auth.verify-email');
+        });
+
+
+
+        // Fortify::loginView(function(){
+        //     return view('auth.login');
+        // });
+
+
+        
+
+        // Fortify::authenticateUsing(function(Request $request){
+        //     $user = User::where('email',$request->email)->first();
+        //     if($user && Hash::check($request->password,$user->password)){
+        //         return $user;
+        //     }
+        // });
+        //  Fortify::registerView(function(){
+        //     return view('auth.register');
+        // });
 
 
 
